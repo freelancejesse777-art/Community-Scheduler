@@ -1,0 +1,178 @@
+:root {
+  --ink: #1a1a1a;
+  --paper: #faf8f4;
+  --accent: #d4622a;
+  --muted: #6b6560;
+  --line: #e3ddd3;
+  --danger: #b3422f;
+  --success: #3a6b4a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.topnav {
+  border-bottom: 1px solid var(--line);
+  background: white;
+}
+
+.topnav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+}
+
+.brand { font-weight: 700; text-decoration: none; color: var(--ink); white-space: nowrap; }
+
+.navlinks a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 14px;
+}
+.navlinks a:hover { color: var(--accent); }
+
+.navlinks-desktop { display: flex; align-items: center; }
+.navlinks-mobile { display: none; }
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 8px;
+  margin: 0;
+  cursor: pointer;
+}
+.nav-toggle span {
+  width: 22px;
+  height: 2px;
+  background: var(--ink);
+  display: block;
+}
+
+main { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
+
+.footer {
+  max-width: 720px;
+  margin: 40px auto 0;
+  padding: 20px 24px;
+  border-top: 1px solid var(--line);
+}
+.footer a {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+  margin-right: 16px;
+}
+.footer a:hover { color: var(--accent); }
+
+h1 { font-size: 28px; margin-bottom: 8px; line-height: 1.25; }
+p.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 32px; }
+
+.card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; margin-top: 16px; }
+label:first-child { margin-top: 0; }
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 16px; /* 16px prevents iOS Safari from auto-zooming on focus */
+  font-family: inherit;
+}
+
+textarea { min-height: 120px; resize: vertical; }
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  margin-right: 8px;
+}
+button:hover { opacity: 0.9; }
+button.secondary { background: white; color: var(--ink); border: 1px solid var(--line); }
+
+.error { color: var(--danger); font-size: 13px; margin-top: 8px; }
+.success { color: var(--success); font-size: 13px; margin-top: 8px; }
+.warning {
+  background: #fdf3e7;
+  border: 1px solid #e8c99a;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: #eee;
+  color: var(--muted);
+  margin-left: 8px;
+}
+.pill.posted { background: #e2f0e6; color: var(--success); }
+.pill.pending { background: #fdf3e7; color: #a06a1e; }
+.pill.failed { background: #f5e3e0; color: var(--danger); }
+
+/* --- Mobile breakpoint --- */
+@media (max-width: 640px) {
+  .topnav-row { padding: 14px 16px; }
+  .brand { font-size: 14px; }
+  .navlinks-desktop { display: none; }
+  .nav-toggle { display: flex; }
+  .navlinks-mobile {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px 16px;
+    border-top: 1px solid var(--line);
+  }
+  .navlinks-mobile a {
+    margin-left: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+  .navlinks-mobile a:last-child { border-bottom: none; }
+
+  main { padding: 24px 16px; }
+  .footer { padding: 16px; }
+
+  h1 { font-size: 22px; }
+  p.subtitle { margin-bottom: 24px; font-size: 14px; }
+
+  .card { padding: 16px; }
+
+  button {
+    width: 100%;
+    margin-right: 0;
+    padding: 12px 18px;
+  }
+  /* Buttons that sit side-by-side inline (e.g. status labels) shouldn't stretch */
+  .pill { width: auto; }
+}
