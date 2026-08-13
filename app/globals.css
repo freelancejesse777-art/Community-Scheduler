@@ -211,6 +211,78 @@ body::after {
   to { stroke-dashoffset: -110; }
 }
 
+/* ---------------- Landing page hero: signal constellation ---------------- */
+
+.constellation {
+  position: relative;
+  max-width: 420px;
+  margin: 4px auto 8px;
+}
+.constellation svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 400 / 210;
+  display: block;
+  overflow: visible;
+}
+
+.constellation-line {
+  stroke: var(--teal);
+  stroke-width: 1.2;
+  fill: none;
+  stroke-dasharray: 5 145;
+  animation: constellation-pulse 3.2s linear infinite;
+}
+@keyframes constellation-pulse {
+  0% { stroke-dashoffset: 150; opacity: 0; }
+  10% { opacity: 0.85; }
+  88% { opacity: 0.85; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+.constellation-hub { fill: var(--amber); }
+.constellation-hub-ring {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 1.5;
+  opacity: 0.55;
+  animation: constellation-ring 2.4s ease-out infinite;
+}
+@keyframes constellation-ring {
+  0% { r: 7; opacity: 0.55; }
+  100% { r: 24; opacity: 0; }
+}
+
+.constellation-nodes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.constellation-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: constellation-node-in 0.6s ease both;
+}
+@keyframes constellation-node-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .constellation { max-width: 320px; margin: 0 auto 4px; }
+  .constellation-node { width: 26px; height: 26px; }
+}
+
 main { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
 
 .footer {
@@ -423,4 +495,6 @@ p.subtitle:only-child { animation: text-pulse 1.6s ease-in-out infinite; }
   }
   body::before { animation: none; }
   .signal-strip path { animation: none; stroke-dasharray: none; opacity: 0.35; }
+  .constellation-line { animation: none; opacity: 0.3; stroke-dasharray: none; }
+  .constellation-hub-ring { animation: none; opacity: 0; }
 }
