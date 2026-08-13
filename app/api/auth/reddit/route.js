@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publicUrl } from "../../../../lib/publicUrl";
 import crypto from "crypto";
 import { getCurrentUser } from "../../../../lib/session";
 import { getRedditAuthUrl } from "../../../../lib/reddit";
@@ -9,12 +10,12 @@ import db from "../../../../lib/db";
 export async function GET(req) {
   const user = getCurrentUser();
   if (!user) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(publicUrl("/login", req));
   }
 
   if (!isWorkspaceOwner(user.userId)) {
     return NextResponse.redirect(
-      new URL("/connect?error=Only the workspace owner can manage connections", req.url)
+      publicUrl("/connect?error=Only the workspace owner can manage connections", req)
     );
   }
 
@@ -24,7 +25,7 @@ export async function GET(req) {
       .get(user.userId).c;
     if (count >= FREE_PLAN_LIMITS.maxConnections) {
       return NextResponse.redirect(
-        new URL("/billing?error=Free plan connection limit reached", req.url)
+        publicUrl("/billing?error=Free plan connection limit reached", req)
       );
     }
   }

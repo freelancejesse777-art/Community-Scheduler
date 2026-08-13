@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publicUrl } from "../../../../../lib/publicUrl";
 import db from "../../../../../lib/db";
 import { exchangeRedditCode } from "../../../../../lib/reddit";
 
@@ -10,7 +11,7 @@ export async function GET(req) {
 
   if (error) {
     return NextResponse.redirect(
-      new URL(`/connect?error=${encodeURIComponent(error)}`, req.url)
+      publicUrl(`/connect?error=${encodeURIComponent(error)}`, req)
     );
   }
 
@@ -19,7 +20,7 @@ export async function GET(req) {
     const decoded = JSON.parse(Buffer.from(state, "base64url").toString());
     userId = decoded.userId;
   } catch {
-    return NextResponse.redirect(new URL("/connect?error=bad_state", req.url));
+    return NextResponse.redirect(publicUrl("/connect?error=bad_state", req));
   }
 
   try {
@@ -31,10 +32,10 @@ export async function GET(req) {
        VALUES (?, 'reddit', ?, ?, ?, ?)`
     ).run(userId, "reddit-account", tokens.access_token, tokens.refresh_token, expiresAt);
 
-    return NextResponse.redirect(new URL("/connect?connected=reddit", req.url));
+    return NextResponse.redirect(publicUrl("/connect?connected=reddit", req));
   } catch (err) {
     return NextResponse.redirect(
-      new URL(`/connect?error=${encodeURIComponent(String(err.message))}`, req.url)
+      publicUrl(`/connect?error=${encodeURIComponent(String(err.message))}`, req)
     );
   }
 }

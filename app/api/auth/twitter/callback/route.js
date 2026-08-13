@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publicUrl } from "../../../../../lib/publicUrl";
 import db from "../../../../../lib/db";
 import { exchangeTwitterCode } from "../../../../../lib/twitter";
 
@@ -10,7 +11,7 @@ export async function GET(req) {
 
   if (error) {
     return NextResponse.redirect(
-      new URL(`/connect?error=${encodeURIComponent(error)}`, req.url)
+      publicUrl(`/connect?error=${encodeURIComponent(error)}`, req)
     );
   }
 
@@ -20,7 +21,7 @@ export async function GET(req) {
 
   if (!pkceRow || pkceRow.expires_at < Date.now()) {
     return NextResponse.redirect(
-      new URL("/connect?error=Login session expired, try connecting again", req.url)
+      publicUrl("/connect?error=Login session expired, try connecting again", req)
     );
   }
 
@@ -36,10 +37,10 @@ export async function GET(req) {
        VALUES (?, 'twitter', 'X account', ?, ?, ?)`
     ).run(pkceRow.user_id, tokens.access_token, tokens.refresh_token, expiresAt);
 
-    return NextResponse.redirect(new URL("/connect?connected=X", req.url));
+    return NextResponse.redirect(publicUrl("/connect?connected=X", req));
   } catch (err) {
     return NextResponse.redirect(
-      new URL(`/connect?error=${encodeURIComponent(String(err.message))}`, req.url)
+      publicUrl(`/connect?error=${encodeURIComponent(String(err.message))}`, req)
     );
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { consumeEmailVerificationToken } from "../../../../lib/auth";
+import { publicUrl } from "../../../../lib/publicUrl";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -7,10 +8,8 @@ export async function GET(req) {
 
   const userId = consumeEmailVerificationToken(token);
   if (!userId) {
-    return NextResponse.redirect(
-      new URL("/dashboard?verify=invalid", req.url)
-    );
+    return NextResponse.redirect(publicUrl("/dashboard?verify=invalid", req));
   }
 
-  return NextResponse.redirect(new URL("/dashboard?verify=success", req.url));
+  return NextResponse.redirect(publicUrl("/dashboard?verify=success", req));
 }
