@@ -71,7 +71,7 @@ export default function BestTimesPage() {
 
       {platforms.map((p) => (
         <div className="card" key={p.platform}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
             <strong>{PLATFORM_LABELS[p.platform] || p.platform}</strong>
             <span className="pill" style={p.source === "personalized" ? { background: "#e2f0e6", color: "var(--success)" } : {}}>
               {p.source === "personalized" ? "Personalized" : "General guidance"}

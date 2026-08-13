@@ -447,6 +447,47 @@ p.subtitle:only-child { animation: text-pulse 1.6s ease-in-out infinite; }
   50% { opacity: 1; }
 }
 
+/* ---------------- Calendar ---------------- */
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.calendar-weekday { text-align: center; padding: 4px 0; }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-cell {
+  min-height: 88px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px;
+  background: var(--panel);
+}
+.calendar-cell-today { background: var(--amber-dim); }
+.calendar-cell-dimmed { opacity: 0.45; }
+
+.calendar-day-num { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+
+.calendar-post {
+  font-size: 10px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  background: rgba(237, 234, 225, 0.08);
+  color: var(--ink);
+}
+.calendar-post-posted { background: var(--teal-dim); color: var(--teal); }
+.calendar-post-failed { background: var(--coral-dim); color: var(--coral); }
+
 /* --- Mobile breakpoint --- */
 @media (max-width: 640px) {
   .topnav-row { padding: 14px 16px; }
@@ -483,6 +524,14 @@ p.subtitle:only-child { animation: text-pulse 1.6s ease-in-out infinite; }
   .pill { width: auto; }
 
   .signal-strip { height: 22px; }
+
+  /* Calendar needs to shrink further than the general card padding rule —
+     7 columns at full desktop sizing won't fit a phone screen legibly. */
+  .calendar-cell { min-height: 56px; padding: 2px; border-radius: 4px; }
+  .calendar-weekday { font-size: 10px; padding: 2px 0; }
+  .calendar-day-num { font-size: 9px; margin-bottom: 2px; }
+  .calendar-post { font-size: 8px; padding: 2px 3px; margin-bottom: 2px; }
+  .calendar-weekdays, .calendar-grid { gap: 2px; }
 }
 
 /* Respect reduced-motion: freeze everything decorative, keep the app usable */

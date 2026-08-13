@@ -37,7 +37,7 @@ export default function ConnectPage() {
       )}
 
       <div className="card">
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4, flexWrap: "wrap" }}>
           <PlatformBadge platform="reddit" />
           <strong>Reddit</strong>
         </div>
@@ -52,7 +52,7 @@ export default function ConnectPage() {
       </div>
 
       <div className="card">
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4, flexWrap: "wrap" }}>
           <PlatformBadge platform="twitter" />
           <strong>X (Twitter)</strong>
         </div>
@@ -68,7 +68,7 @@ export default function ConnectPage() {
       </div>
 
       <div className="card">
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4, flexWrap: "wrap" }}>
           <PlatformBadge platform="tiktok" />
           <strong>TikTok</strong>
         </div>
@@ -125,7 +125,7 @@ function ConnectForm({ title, platform, description, fields, endpoint, buttonLab
 
   return (
     <div className="card">
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4, flexWrap: "wrap" }}>
         <PlatformBadge platform={platform} />
         <strong>{title}</strong>
       </div>

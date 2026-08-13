@@ -174,25 +174,25 @@ export default function CalendarPage() {
       {message && <p className="error">{message.text}</p>}
 
       <div className="card" style={{ padding: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <button type="button" className="secondary" style={{ marginTop: 0 }} onClick={() => goToMonth(-1)}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+          <button type="button" className="secondary" style={{ marginTop: 0, width: "auto" }} onClick={() => goToMonth(-1)}>
             ← Prev
           </button>
           <strong>{monthDate.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</strong>
-          <button type="button" className="secondary" style={{ marginTop: 0 }} onClick={() => goToMonth(1)}>
+          <button type="button" className="secondary" style={{ marginTop: 0, width: "auto" }} onClick={() => goToMonth(1)}>
             Next →
           </button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, fontSize: 11, color: "var(--muted)", marginBottom: 4 }}>
+        <div className="calendar-weekdays">
           {WEEKDAY_LABELS.map((w) => (
-            <div key={w} style={{ textAlign: "center", padding: "4px 0" }}>
+            <div key={w} className="calendar-weekday">
               {w}
             </div>
           ))}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
+        <div className="calendar-grid">
           {days.map((day) => {
             const key = dateKey(day);
             const isCurrentMonth = day.getMonth() === monthDate.getMonth();
@@ -209,16 +209,10 @@ export default function CalendarPage() {
                 }}
                 onDragLeave={() => setDragOverKey((k) => (k === key ? null : k))}
                 onDrop={(e) => onDropOnDay(e, day)}
-                style={{
-                  minHeight: 88,
-                  border: `1px solid ${isDragOver ? "var(--accent)" : "var(--line)"}`,
-                  borderRadius: 6,
-                  padding: 4,
-                  background: isToday ? "#fdf3e7" : isCurrentMonth ? "white" : "#faf8f4",
-                  opacity: isCurrentMonth ? 1 : 0.5,
-                }}
+                className={`calendar-cell${isToday ? " calendar-cell-today" : ""}${!isCurrentMonth ? " calendar-cell-dimmed" : ""}`}
+                style={isDragOver ? { borderColor: "var(--amber)" } : undefined}
               >
-                <div style={{ fontSize: 11, color: "var(--muted)", marginBottom: 4 }}>{day.getDate()}</div>
+                <div className="calendar-day-num">{day.getDate()}</div>
                 {posts.map((post) => (
                   <div
                     key={post.id}
@@ -226,17 +220,8 @@ export default function CalendarPage() {
                     onDragStart={(e) => onDragStart(e, post)}
                     onClick={() => post.status === "pending" && startEditing(post)}
                     title={`${post.destination} · ${post.status}${post.result_message ? " · " + post.result_message : ""}`}
-                    style={{
-                      fontSize: 10,
-                      padding: "3px 5px",
-                      borderRadius: 4,
-                      marginBottom: 3,
-                      cursor: post.status === "pending" ? "grab" : "default",
-                      background:
-                        post.status === "posted" ? "#e2f0e6" : post.status === "failed" ? "#f5e3e0" : "#eee",
-                      color:
-                        post.status === "posted" ? "var(--success)" : post.status === "failed" ? "var(--danger)" : "var(--ink)",
-                    }}
+                    className={`calendar-post calendar-post-${post.status}`}
+                    style={{ cursor: post.status === "pending" ? "grab" : "default" }}
                   >
                     <div style={{ fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {PLATFORM_LABELS[post.platform] || post.platform}

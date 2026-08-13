@@ -150,7 +150,7 @@ export default function AnalyticsPage() {
               <strong>Top performing posts</strong>
               {topPosts.map((t) => (
                 <div key={t.id} style={{ padding: "10px 0", borderTop: "1px solid var(--line)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 }}>
                     <strong>{t.destination}</strong>
                     <span style={{ fontSize: 13, color: "var(--muted)" }}>
                       {t.engagement_score ?? 0} pts · {t.engagement_comments ?? 0} comments
@@ -173,7 +173,7 @@ export default function AnalyticsPage() {
           )}
 
           <div className="card">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
               <strong>Post history</strong>
               {hasAnyEngagementSupport && (
                 <button type="button" className="secondary" onClick={refreshEngagement} disabled={refreshing}>
@@ -191,7 +191,7 @@ export default function AnalyticsPage() {
 
             {history.map((h) => (
               <div key={h.id} style={{ padding: "10px 0", borderTop: "1px solid var(--line)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 }}>
                   <strong>{h.destination}</strong>
                   <span className={`pill ${h.status}`}>{h.status}</span>
                 </div>

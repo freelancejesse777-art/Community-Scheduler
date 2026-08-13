@@ -250,10 +250,10 @@ export default function CampaignsPage() {
 
         {rows.map((r, i) => (
           <div key={r.key} style={{ borderTop: "1px solid var(--line)", paddingTop: 16, marginTop: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
               <strong style={{ fontSize: 13 }}>Destination {i + 1}</strong>
               {rows.length > 1 && (
-                <button type="button" className="secondary" style={{ marginTop: 0, padding: "4px 10px" }} onClick={() => removeRow(r.key)}>
+                <button type="button" className="secondary" style={{ marginTop: 0, padding: "4px 10px", width: "auto" }} onClick={() => removeRow(r.key)}>
                   Remove
                 </button>
               )}

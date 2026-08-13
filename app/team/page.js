@@ -145,12 +145,12 @@ export default function TeamPage() {
           <p style={{ fontSize: 14, color: "var(--muted)" }}>No teammates yet.</p>
         )}
         {data.members.map((m) => (
-          <div key={m.id} style={{ padding: "10px 0", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div key={m.id} style={{ padding: "10px 0", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
             <div>
               <strong>{m.email}</strong>
               <span className={`pill ${m.status === "active" ? "posted" : "pending"}`}>{m.status}</span>
             </div>
-            <button type="button" className="secondary" style={{ marginTop: 0 }} onClick={() => removeMember(m.id)}>
+            <button type="button" className="secondary" style={{ marginTop: 0, width: "auto" }} onClick={() => removeMember(m.id)}>
               Remove
             </button>
           </div>

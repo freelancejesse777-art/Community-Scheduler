@@ -133,9 +133,9 @@ export default function DashboardPage() {
 
       {onboarding && !onboarding.dismissed && onboarding.isWorkspaceOwner && (!onboarding.hasConnection || !onboarding.hasScheduled) && (
         <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
             <strong>Getting started</strong>
-            <button type="button" className="secondary" style={{ marginTop: 0 }} onClick={dismissOnboarding} disabled={dismissing}>
+            <button type="button" className="secondary" style={{ marginTop: 0, width: "auto" }} onClick={dismissOnboarding} disabled={dismissing}>
               Dismiss
             </button>
           </div>
@@ -198,14 +198,14 @@ export default function DashboardPage() {
 
 function ChecklistItem({ done, label, href }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid var(--line)" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid var(--line)", flexWrap: "wrap", gap: 8 }}>
       <span style={{ fontSize: 14, color: done ? "var(--success)" : "var(--ink)" }}>
         {done ? "✓ " : "○ "}
         {label}
       </span>
       {!done && (
         <a href={href}>
-          <button type="button" className="secondary" style={{ marginTop: 0, padding: "4px 10px" }}>
+          <button type="button" className="secondary" style={{ marginTop: 0, padding: "4px 10px", width: "auto" }}>
             Go
           </button>
         </a>
