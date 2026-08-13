@@ -7,7 +7,12 @@ export default function Nav() {
   const links = [
     { href: "/connect", label: "Connections" },
     { href: "/compose", label: "Compose" },
+    { href: "/campaigns", label: "Campaigns" },
     { href: "/queue", label: "Queue" },
+    { href: "/calendar", label: "Calendar" },
+    { href: "/best-times", label: "Best Times" },
+    { href: "/analytics", label: "Analytics" },
+    { href: "/team", label: "Team" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/billing", label: "Billing" },
     { href: "/login", label: "Login" },

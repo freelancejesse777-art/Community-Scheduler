@@ -3,17 +3,20 @@ import db from "../../../lib/db";
 import { getCurrentUser } from "../../../lib/session";
 import { isPro, FREE_PLAN_LIMITS } from "../../../lib/billing";
 import { logError } from "../../../lib/logger";
+import { getWorkspaceOwnerId, isWorkspaceOwner } from "../../../lib/team";
 
 export async function GET() {
   const user = getCurrentUser();
   if (!user) return NextResponse.json({ error: "Not logged in" }, { status: 401 });
 
+  const ownerId = getWorkspaceOwnerId(user.userId);
+
   try {
-    const userRow = db.prepare("SELECT email_verified FROM users WHERE id = ?").get(user.userId);
+    const userRow = db.prepare("SELECT email_verified FROM users WHERE id = ?").get(ownerId);
 
     const connectionsCount = db
       .prepare("SELECT COUNT(*) as c FROM connections WHERE user_id = ?")
-      .get(user.userId).c;
+      .get(ownerId).c;
 
     const monthStart = new Date();
     monthStart.setDate(1);
@@ -25,7 +28,7 @@ export async function GET() {
          JOIN posts p ON p.id = sp.post_id
          WHERE p.user_id = ? AND sp.created_at >= ?`
       )
-      .get(user.userId, monthStart.toISOString()).c;
+      .get(ownerId, monthStart.toISOString()).c;
 
     const statusCounts = db
       .prepare(
@@ -34,7 +37,7 @@ export async function GET() {
          WHERE p.user_id = ?
          GROUP BY sp.status`
       )
-      .all(user.userId);
+      .all(ownerId);
 
     const recentActivity = db
       .prepare(
@@ -46,10 +49,11 @@ export async function GET() {
          ORDER BY sp.created_at DESC
          LIMIT 10`
       )
-      .all(user.userId);
+      .all(ownerId);
 
     return NextResponse.json({
-      plan: isPro(user.userId) ? "pro" : "free",
+      plan: isPro(ownerId) ? "pro" : "free",
+      isTeamWorkspace: !isWorkspaceOwner(user.userId),
       emailVerified: !!userRow?.email_verified,
       connectionsCount,
       scheduledThisMonth,
@@ -58,7 +62,7 @@ export async function GET() {
       recentActivity,
     });
   } catch (err) {
-    logError(err, { context: "dashboard route", userId: user.userId });
+    logError(err, { context: "dashboard route", userId: user.userId, ownerId });
     return NextResponse.json(
       { error: "Couldn't load dashboard data. Try again in a moment." },
       { status: 500 }

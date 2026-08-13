@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 export default function ComposePage() {
   const [connections, setConnections] = useState([]);
+  const [bestTimes, setBestTimes] = useState([]);
   const [baseContent, setBaseContent] = useState("");
   const [title, setTitle] = useState("");
   const [destination, setDestination] = useState("");
@@ -18,6 +19,10 @@ export default function ComposePage() {
     fetch("/api/connections")
       .then((r) => r.json())
       .then((d) => setConnections(d.connections || []));
+    fetch("/api/best-times")
+      .then((r) => r.json())
+      .then((d) => setBestTimes(d.platforms || []))
+      .catch(() => {});
   }, []);
 
   async function draft() {
@@ -140,6 +145,18 @@ export default function ComposePage() {
             value={scheduledFor}
             onChange={(e) => setScheduledFor(e.target.value)}
           />
+          {(() => {
+            const platform = connections.find((c) => String(c.id) === String(connectionId))?.platform;
+            const hint = bestTimes.find((b) => b.platform === platform);
+            if (!hint) return null;
+            const label = hint.source === "personalized" ? hint.personalSuggestions[0].label : hint.generic.label;
+            return (
+              <p style={{ fontSize: 12, color: "var(--muted)", marginTop: 6 }}>
+                💡 {hint.source === "personalized" ? "Your best-performing window: " : "Suggested window: "}
+                {label} (see <a href="/best-times">Best Times</a>)
+              </p>
+            );
+          })()}
 
           <button onClick={scheduleIt} disabled={loading || !connectionId || !scheduledFor}>
             {loading ? "Scheduling..." : "Schedule post"}

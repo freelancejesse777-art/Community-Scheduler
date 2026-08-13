@@ -2,11 +2,19 @@ import { NextResponse } from "next/server";
 import db from "../../../../lib/db";
 import { getCurrentUser } from "../../../../lib/session";
 import { isPro, FREE_PLAN_LIMITS } from "../../../../lib/billing";
+import { isWorkspaceOwner } from "../../../../lib/team";
 import { verifyMastodonToken } from "../../../../lib/mastodon";
 
 export async function POST(req) {
   const user = getCurrentUser();
   if (!user) return NextResponse.json({ error: "Not logged in" }, { status: 401 });
+
+  if (!isWorkspaceOwner(user.userId)) {
+    return NextResponse.json(
+      { error: "Only the workspace owner can manage connections." },
+      { status: 403 }
+    );
+  }
 
   if (!isPro(user.userId)) {
     const count = db

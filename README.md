@@ -1,9 +1,10 @@
 # Community Scheduler
 
 Write a post once, let AI adapt it for each community's tone, and schedule
-it to your own connected accounts (Reddit to start). No spam bots, no
-posting to places you're not a real member of — everything runs through
-your own OAuth token.
+it to your own connected accounts (Reddit, Discord, Mastodon, Telegram,
+Bluesky, X, Facebook, Lemmy). No spam bots, no posting to places you're
+not a real member of — everything runs through your own OAuth token or
+credentials.
 
 This is a **working MVP scaffold**, not a finished product. It's meant to
 be a real foundation you build on, not a toy demo.
@@ -14,21 +15,25 @@ be a real foundation you build on, not a toy demo.
 
 - Email/password auth with sessions (JWT in an httpOnly cookie)
 - SQLite database — zero setup, no external DB server needed
-- Reddit OAuth connect flow (using your own Reddit "app" credentials)
-- Discord posting via incoming webhooks (no bot approval needed)
+- Connections to 8 platforms: Reddit, Discord, Mastodon, Telegram, Bluesky, X, Facebook, Lemmy
 - AI-assisted post adaptation per destination (Claude via Anthropic API)
 - A basic self-promo rule risk-checker before you post
 - A scheduler that submits due posts (triggered by an external cron hitting one endpoint)
 - Stripe subscriptions: free tier (1 connection, 5 scheduled posts/month) vs. Pro (unlimited)
 - Compose / Connect / Queue / Billing pages
+- **Post history & analytics** — engagement tracking (score/comments) for Reddit, Mastodon, Lemmy, and Bluesky; a dashboard of trends, per-platform breakdowns, and top-performing posts
+- **Multi-post campaigns** — adapt one draft for many destinations at once, with a stagger helper for scheduling times, all tracked as one unit
+- **Content calendar** — month view with drag-and-drop rescheduling (plus a click-based fallback for mobile)
+- **Best-time-to-post suggestions** — personalized from your own engagement history once you have enough data, generic guidance until then
+- **Team accounts** — invite collaborators (Pro) to share your whole workspace: connections, posts, campaigns, analytics
+- **Onboarding wizard** — a guided first-run flow for new signups, plus a persistent "Getting Started" checklist on the dashboard
 
 ## What's NOT included yet (you'll want to add these)
 
-- Email verification / password reset
-- Rate limiting on the API routes
 - A real, comprehensive per-subreddit rule database (the current check is a simple keyword flag — not a substitute for reading each subreddit's actual rules)
 - A Discord bot for reading channel context (webhooks are one-way — post only, can't read replies)
-- Usage analytics / dashboards
+- Engagement tracking for Discord, Telegram, X, and Facebook (their APIs don't expose easy read-back without extra app-review permissions)
+
 
 ---
 

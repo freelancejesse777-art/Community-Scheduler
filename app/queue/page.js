@@ -16,7 +16,20 @@ export default function QueuePage() {
       <p className="subtitle">Everything scheduled, posted, or failed.</p>
 
       {scheduled.length === 0 && (
-        <div className="card">Nothing scheduled yet — go to Compose.</div>
+        <div className="card">
+          <strong>Nothing scheduled yet</strong>
+          <p style={{ fontSize: 14, color: "var(--muted)", margin: "8px 0 16px" }}>
+            Write something in Compose or build a multi-destination Campaign, and it'll show up here.
+          </p>
+          <a href="/compose">
+            <button type="button">Go to Compose</button>
+          </a>
+          <a href="/campaigns">
+            <button type="button" className="secondary">
+              Go to Campaigns
+            </button>
+          </a>
+        </div>
       )}
 
       {scheduled.map((s) => (
@@ -34,6 +47,13 @@ export default function QueuePage() {
           {s.result_message && (
             <p style={{ fontSize: 12, color: "var(--muted)" }}>
               {s.result_message}
+            </p>
+          )}
+          {s.posted_url && (
+            <p style={{ fontSize: 12 }}>
+              <a href={s.posted_url} target="_blank" rel="noreferrer">
+                view live post
+              </a>
             </p>
           )}
         </div>

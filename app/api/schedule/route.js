@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import db from "../../../lib/db";
 import { getCurrentUser } from "../../../lib/session";
 import { isPro, FREE_PLAN_LIMITS } from "../../../lib/billing";
+import { getWorkspaceOwnerId } from "../../../lib/team";
 
 export async function POST(req) {
   const user = getCurrentUser();
   if (!user) return NextResponse.json({ error: "Not logged in" }, { status: 401 });
 
-  if (!isPro(user.userId)) {
+  const ownerId = getWorkspaceOwnerId(user.userId);
+
+  if (!isPro(ownerId)) {
     const monthStart = new Date();
     monthStart.setDate(1);
     monthStart.setHours(0, 0, 0, 0);
@@ -18,7 +21,7 @@ export async function POST(req) {
          JOIN posts p ON p.id = sp.post_id
          WHERE p.user_id = ? AND sp.created_at >= ?`
       )
-      .get(user.userId, monthStart.toISOString()).c;
+      .get(ownerId, monthStart.toISOString()).c;
 
     if (count >= FREE_PLAN_LIMITS.maxScheduledPostsPerMonth) {
       return NextResponse.json(
@@ -37,6 +40,13 @@ export async function POST(req) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
+  // Confirm both the post and the connection belong to this workspace
+  // before attaching them together.
+  const post = db.prepare("SELECT id FROM posts WHERE id = ? AND user_id = ?").get(postId, ownerId);
+  if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });
+  const connection = db.prepare("SELECT id FROM connections WHERE id = ? AND user_id = ?").get(connectionId, ownerId);
+  if (!connection) return NextResponse.json({ error: "Connection not found" }, { status: 404 });
+
   const info = db
     .prepare(
       `INSERT INTO scheduled_posts (post_id, connection_id, destination, adapted_content, scheduled_for)
@@ -51,6 +61,7 @@ export async function GET() {
   const user = getCurrentUser();
   if (!user) return NextResponse.json({ error: "Not logged in" }, { status: 401 });
 
+  const ownerId = getWorkspaceOwnerId(user.userId);
   const rows = db
     .prepare(
       `SELECT sp.*, p.title, p.base_content, c.platform, c.account_label
@@ -60,7 +71,7 @@ export async function GET() {
        WHERE p.user_id = ?
        ORDER BY sp.scheduled_for ASC`
     )
-    .all(user.userId);
+    .all(ownerId);
 
   return NextResponse.json({ scheduled: rows });
 }

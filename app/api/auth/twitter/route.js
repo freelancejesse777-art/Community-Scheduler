@@ -3,12 +3,19 @@ import crypto from "crypto";
 import { getCurrentUser } from "../../../../lib/session";
 import { generatePkcePair, getTwitterAuthUrl } from "../../../../lib/twitter";
 import { isPro, FREE_PLAN_LIMITS } from "../../../../lib/billing";
+import { isWorkspaceOwner } from "../../../../lib/team";
 import db from "../../../../lib/db";
 
 export async function GET(req) {
   const user = getCurrentUser();
   if (!user) {
     return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  if (!isWorkspaceOwner(user.userId)) {
+    return NextResponse.redirect(
+      new URL("/connect?error=Only the workspace owner can manage connections", req.url)
+    );
   }
 
   if (!isPro(user.userId)) {

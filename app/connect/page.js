@@ -3,11 +3,16 @@ import { useEffect, useState } from "react";
 
 export default function ConnectPage() {
   const [status, setStatus] = useState(null);
+  const [teamInfo, setTeamInfo] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("connected")) setStatus({ ok: true, msg: `Connected ${params.get("connected")}!` });
     if (params.get("error")) setStatus({ ok: false, msg: params.get("error") });
+    fetch("/api/team")
+      .then((r) => r.json())
+      .then(setTeamInfo)
+      .catch(() => {});
   }, []);
 
   const onDone = (name) => () => setStatus({ ok: true, msg: `Connected ${name}!` });
@@ -18,6 +23,13 @@ export default function ConnectPage() {
       <p className="subtitle">
         Connect the communities you're already a real, active member of.
       </p>
+
+      {teamInfo && !teamInfo.isOwner && (
+        <div className="warning">
+          You're working in {teamInfo.workspaceOwnerEmail}'s workspace — only they can add or remove
+          connections. You can still use everything they've connected.
+        </div>
+      )}
 
       {status && (
         <p className={status.ok ? "success" : "error"}>{status.msg}</p>

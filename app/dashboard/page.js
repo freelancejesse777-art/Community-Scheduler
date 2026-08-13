@@ -6,6 +6,8 @@ export default function DashboardPage() {
   const [loadError, setLoadError] = useState(null);
   const [verifyMsg, setVerifyMsg] = useState(null);
   const [resending, setResending] = useState(false);
+  const [onboarding, setOnboarding] = useState(null);
+  const [dismissing, setDismissing] = useState(false);
 
   const loadDashboard = useCallback(async () => {
     setLoadError(null);
@@ -49,11 +51,25 @@ export default function DashboardPage() {
 
   useEffect(() => {
     loadDashboard();
+    fetch("/api/onboarding/status")
+      .then((r) => r.json())
+      .then(setOnboarding)
+      .catch(() => {});
 
     const params = new URLSearchParams(window.location.search);
     if (params.get("verify") === "success") setVerifyMsg({ ok: true, text: "Email verified!" });
     if (params.get("verify") === "invalid") setVerifyMsg({ ok: false, text: "That verification link is invalid or expired." });
   }, [loadDashboard]);
+
+  async function dismissOnboarding() {
+    setDismissing(true);
+    try {
+      await fetch("/api/onboarding/complete", { method: "POST" });
+      setOnboarding((o) => ({ ...o, dismissed: true }));
+    } finally {
+      setDismissing(false);
+    }
+  }
 
   async function resendVerification() {
     setResending(true);
@@ -115,6 +131,30 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {onboarding && !onboarding.dismissed && onboarding.isWorkspaceOwner && (!onboarding.hasConnection || !onboarding.hasScheduled) && (
+        <div className="card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <strong>Getting started</strong>
+            <button type="button" className="secondary" style={{ marginTop: 0 }} onClick={dismissOnboarding} disabled={dismissing}>
+              Dismiss
+            </button>
+          </div>
+          <ChecklistItem done={onboarding.hasConnection} label="Connect an account" href="/connect" />
+          <ChecklistItem done={onboarding.hasScheduled} label="Schedule your first post" href="/compose" />
+          <ChecklistItem done={onboarding.hasPosted} label="See it go live" href="/queue" />
+        </div>
+      )}
+
+      {onboarding && !onboarding.dismissed && !onboarding.isWorkspaceOwner && (
+        <div className="card">
+          <strong>Getting started</strong>
+          <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 8 }}>
+            You're working in a shared workspace — head to <a href="/compose">Compose</a> to write your first post,
+            using connections your workspace owner already set up.
+          </p>
+        </div>
+      )}
+
       <div className="card">
         <strong>Usage</strong>
         <p style={{ fontSize: 14, color: "var(--muted)" }}>
@@ -148,6 +188,24 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ChecklistItem({ done, label, href }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid var(--line)" }}>
+      <span style={{ fontSize: 14, color: done ? "var(--success)" : "var(--ink)" }}>
+        {done ? "✓ " : "○ "}
+        {label}
+      </span>
+      {!done && (
+        <a href={href}>
+          <button type="button" className="secondary" style={{ marginTop: 0, padding: "4px 10px" }}>
+            Go
+          </button>
+        </a>
+      )}
     </div>
   );
 }

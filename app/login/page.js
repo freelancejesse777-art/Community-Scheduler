@@ -21,7 +21,7 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong");
-      window.location.href = "/connect";
+      window.location.href = mode === "signup" ? "/onboarding" : "/dashboard";
     } catch (err) {
       setError(err.message);
     } finally {
