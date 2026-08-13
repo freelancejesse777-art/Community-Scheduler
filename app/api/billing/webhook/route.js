@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { stripe, upsertSubscriptionFromStripeEvent } from "../../../../lib/billing";
+import { getStripeClient, upsertSubscriptionFromStripeEvent } from "../../../../lib/billing";
 import db from "../../../../lib/db";
 
 // Stripe requires the raw request body to verify the webhook signature —
 // Next.js App Router gives us the raw text via req.text().
 export async function POST(req) {
+  const stripe = getStripeClient();
   const sig = req.headers.get("stripe-signature");
   const body = await req.text();
 
