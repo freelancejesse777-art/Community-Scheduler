@@ -12,12 +12,15 @@ export default function PrivacyPage() {
         <h3>What we collect</h3>
         <p>
           Your email address and password (stored as a one-way hash, never
-          in plain text). Content you write and schedule to post. OAuth
-          access/refresh tokens for platforms you connect (Reddit), and
-          webhook URLs for platforms you connect (Discord) — these let us
-          post on your behalf only when you schedule a post. Billing
-          information is handled entirely by Stripe; we store only your
-          Stripe customer ID, not your card details.
+          in plain text). Content you write and schedule to post.
+          Credentials for platforms you connect — OAuth access/refresh
+          tokens (Reddit, X), webhook URLs (Discord), or access
+          tokens/passwords you provide directly (Mastodon, Telegram,
+          Bluesky, Facebook, Lemmy) — these let us post on your behalf only
+          when you schedule a post. Billing information is handled entirely
+          by Stripe; we store only your Stripe customer ID, not your card
+          details. If you submit feedback, we store the message and,
+          optionally, an email to follow up.
         </p>
 
         <h3>What we don't do</h3>
@@ -29,28 +32,43 @@ export default function PrivacyPage() {
           what's needed to authenticate.
         </p>
 
+        <h3>Team workspaces</h3>
+        <p>
+          If you're invited to someone else's workspace, you can see and
+          act on their connections, posts, and scheduled content — that
+          data belongs to the workspace owner, not to you individually. If
+          you own a workspace and invite others, they get the same access.
+        </p>
+
         <h3>Third parties we use</h3>
         <p>
           Stripe (payments), Anthropic (AI post-drafting — your draft
           content is sent to Anthropic's API to generate adapted versions),
-          Reddit and Discord APIs (to post on your behalf), and [your email
-          provider, e.g. Resend] (transactional emails like password
-          resets).
+          the platform APIs you connect (Reddit, Discord, Mastodon,
+          Telegram, Bluesky, X, Facebook, Lemmy — to post on your behalf),
+          and an email provider for transactional emails like password
+          resets and team invites. If error monitoring is enabled, error
+          details (which may include parts of your request) are sent to
+          our error-tracking provider to help us fix bugs.
         </p>
 
-        <h3>Data retention</h3>
+        <h3>Data retention and deletion</h3>
         <p>
-          We retain your account data until you delete your account.
-          [Add specifics on how account deletion works once you build it —
-          not yet implemented in this scaffold.]
+          We retain your account data until you delete your account. You
+          can permanently delete your account and all associated
+          data — connections, posts, scheduled posts — at any time from the
+          Account page. Workspace owners need to remove any teammates
+          first. You can also download a copy of your data from the same
+          page before deleting it.
         </p>
 
         <h3>Your rights</h3>
         <p>
-          You can request a copy of your data or request deletion by
-          contacting [your support email]. [If you have EU/UK users, this
-          section needs to reference GDPR rights specifically — Article 15
-          (access), Article 17 (erasure), etc. Get real legal review.]
+          You can export or delete your data yourself at any time from the
+          Account page, or reach us via the <a href="/feedback">feedback form</a>.
+          [If you have EU/UK users, this section needs to reference GDPR
+          rights specifically — Article 15 (access), Article 17 (erasure),
+          etc. Get real legal review.]
         </p>
 
         <h3>Changes to this policy</h3>
@@ -60,7 +78,7 @@ export default function PrivacyPage() {
         </p>
 
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 24 }}>
-          Last updated: [date] — Contact: [your support email]
+          Last updated: [date] — Contact: <a href="/feedback">send feedback</a>, or add a support email here.
         </p>
       </div>
     </div>

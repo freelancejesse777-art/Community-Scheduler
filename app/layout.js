@@ -31,6 +31,7 @@ export default function RootLayout({ children }) {
         <SignalStrip />
         <main>{children}</main>
         <footer className="footer">
+          <a href="/feedback">Feedback</a>
           <a href="/terms">Terms</a>
           <a href="/privacy">Privacy</a>
         </footer>

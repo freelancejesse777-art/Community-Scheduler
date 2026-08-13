@@ -188,6 +188,10 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      <p style={{ fontSize: 13 }}>
+        <a href="/account">Account settings & data</a>
+      </p>
     </div>
   );
 }
