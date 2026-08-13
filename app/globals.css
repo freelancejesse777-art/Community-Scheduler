@@ -1,25 +1,98 @@
+/* ============================================================
+   Community Scheduler — visual system
+   Direction: "broadcast console" — one signal, tuned to many
+   frequencies. Deep console navy, amber signal accent, teal
+   data/secondary accent, monospace for anything that reads like
+   instrumentation (timestamps, stats, pills, nav).
+   ============================================================ */
+
 :root {
-  --ink: #1a1a1a;
-  --paper: #faf8f4;
-  --accent: #d4622a;
-  --muted: #6b6560;
-  --line: #e3ddd3;
-  --danger: #b3422f;
-  --success: #3a6b4a;
+  --bg: #0f1424;
+  --bg-2: #0b0f1d;
+  --panel: #161c36;
+  --panel-2: #1c2342;
+  --line: #2a3358;
+  --line-soft: #232a4c;
+  --ink: #edeae1;
+  --muted: #8891b5;
+  --amber: #ffb454;
+  --amber-dim: rgba(255, 180, 84, 0.14);
+  --teal: #5fd4c4;
+  --teal-dim: rgba(95, 212, 196, 0.14);
+  --coral: #ff7a6b;
+  --coral-dim: rgba(255, 122, 107, 0.14);
+
+  /* legacy aliases so anything still referencing these keeps working */
+  --paper: var(--bg);
+  --accent: var(--amber);
+  --danger: var(--coral);
+  --success: var(--teal);
+
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--paper);
+  font-family: var(--font-body);
+  background: var(--bg);
   color: var(--ink);
+  position: relative;
+  min-height: 100vh;
 }
+
+/* Ambient background — two slow-drifting glows plus a faint scanline
+   texture, fixed so it doesn't scroll with content. Very low opacity;
+   this is atmosphere, not decoration you're meant to consciously notice. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(720px 480px at 8% -5%, rgba(255, 180, 84, 0.10), transparent 60%),
+    radial-gradient(680px 520px at 96% 18%, rgba(95, 212, 196, 0.09), transparent 60%),
+    radial-gradient(600px 600px at 50% 115%, rgba(95, 212, 196, 0.06), transparent 65%),
+    var(--bg-2);
+  background-repeat: no-repeat;
+  animation: drift 90s ease-in-out infinite alternate;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(237, 234, 225, 0.018),
+    rgba(237, 234, 225, 0.018) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.5;
+}
+
+@keyframes drift {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: -40px 30px, 30px -20px, 0 -10px, 0 0; }
+}
+
+/* ---------------- Nav / broadcast console strip ---------------- */
 
 .topnav {
   border-bottom: 1px solid var(--line);
-  background: white;
+  background: rgba(11, 15, 29, 0.72);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .topnav-row {
@@ -29,15 +102,61 @@ body {
   padding: 16px 32px;
 }
 
-.brand { font-weight: 700; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.brand {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 3px var(--amber-dim), 0 0 10px 1px rgba(255, 180, 84, 0.6);
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.82); }
+}
 
 .navlinks a {
-  margin-left: 20px;
+  margin-left: 22px;
   text-decoration: none;
   color: var(--muted);
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  position: relative;
+  padding-bottom: 3px;
+  transition: color 0.15s ease;
 }
-.navlinks a:hover { color: var(--accent); }
+.navlinks a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.navlinks a:hover { color: var(--ink); }
+.navlinks a:hover::after { transform: scaleX(1); }
 
 .navlinks-desktop { display: flex; align-items: center; }
 .navlinks-mobile { display: none; }
@@ -60,6 +179,110 @@ body {
   display: block;
 }
 
+/* Signal strip — the signature element. A quiet traveling waveform
+   that sits under the nav on every page, standing in for "one signal,
+   tuned across many frequencies." Freezes under reduced-motion. */
+.signal-strip {
+  width: 100%;
+  height: 30px;
+  display: block;
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.015), transparent);
+  border-bottom: 1px solid var(--line-soft);
+}
+.signal-strip svg { width: 100%; height: 100%; display: block; }
+.signal-strip path {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 1.4;
+  opacity: 0.45;
+  stroke-dasharray: 6 5;
+  animation: signal-travel 5.5s linear infinite;
+}
+.signal-strip .peak {
+  stroke: var(--amber);
+  stroke-width: 1.6;
+  opacity: 0.85;
+  stroke-dasharray: none;
+  animation: none;
+}
+
+@keyframes signal-travel {
+  to { stroke-dashoffset: -110; }
+}
+
+/* ---------------- Landing page hero: signal constellation ---------------- */
+
+.constellation {
+  position: relative;
+  max-width: 420px;
+  margin: 4px auto 8px;
+}
+.constellation svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 400 / 210;
+  display: block;
+  overflow: visible;
+}
+
+.constellation-line {
+  stroke: var(--teal);
+  stroke-width: 1.2;
+  fill: none;
+  stroke-dasharray: 5 145;
+  animation: constellation-pulse 3.2s linear infinite;
+}
+@keyframes constellation-pulse {
+  0% { stroke-dashoffset: 150; opacity: 0; }
+  10% { opacity: 0.85; }
+  88% { opacity: 0.85; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+.constellation-hub { fill: var(--amber); }
+.constellation-hub-ring {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 1.5;
+  opacity: 0.55;
+  animation: constellation-ring 2.4s ease-out infinite;
+}
+@keyframes constellation-ring {
+  0% { r: 7; opacity: 0.55; }
+  100% { r: 24; opacity: 0; }
+}
+
+.constellation-nodes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.constellation-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: constellation-node-in 0.6s ease both;
+}
+@keyframes constellation-node-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .constellation { max-width: 320px; margin: 0 auto 4px; }
+  .constellation-node { width: 26px; height: 26px; }
+}
+
 main { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
 
 .footer {
@@ -70,24 +293,68 @@ main { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
 }
 .footer a {
   color: var(--muted);
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   text-decoration: none;
   margin-right: 16px;
 }
-.footer a:hover { color: var(--accent); }
+.footer a:hover { color: var(--amber); }
 
-h1 { font-size: 28px; margin-bottom: 8px; line-height: 1.25; }
-p.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 32px; }
+/* ---------------- Typography ---------------- */
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  color: var(--ink);
+}
+p.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 32px; font-size: 15px; }
+
+strong { color: var(--ink); }
+
+a { color: var(--teal); }
+
+/* ---------------- Cards ---------------- */
 
 .card {
-  background: white;
+  background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 24px;
   margin-bottom: 20px;
+  animation: rise 0.45s ease both;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  border-color: var(--line-soft);
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.5);
 }
 
-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; margin-top: 16px; }
+main > .card:nth-of-type(1) { animation-delay: 0.02s; }
+main > .card:nth-of-type(2) { animation-delay: 0.08s; }
+main > .card:nth-of-type(3) { animation-delay: 0.14s; }
+main > .card:nth-of-type(4) { animation-delay: 0.2s; }
+main > .card:nth-of-type(n+5) { animation-delay: 0.24s; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+  margin-top: 16px;
+}
 label:first-child { margin-top: 0; }
 
 input, textarea, select {
@@ -95,55 +362,95 @@ input, textarea, select {
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  font-size: 16px; /* 16px prevents iOS Safari from auto-zooming on focus */
-  font-family: inherit;
+  font-size: 15px;
+  font-family: var(--font-body);
+  background: var(--bg-2);
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+input::placeholder, textarea::placeholder { color: #565f82; }
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-dim);
 }
 
 textarea { min-height: 120px; resize: vertical; }
 
 button {
-  background: var(--accent);
-  color: white;
+  background: var(--amber);
+  color: #1a1508;
   border: none;
   padding: 10px 18px;
   border-radius: 6px;
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
   margin-top: 16px;
   margin-right: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
 }
-button:hover { opacity: 0.9; }
-button.secondary { background: white; color: var(--ink); border: 1px solid var(--line); }
+button:hover:not(:disabled) {
+  box-shadow: 0 0 0 4px var(--amber-dim);
+  transform: translateY(-1px);
+}
+button:active:not(:disabled) { transform: translateY(0); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
-.error { color: var(--danger); font-size: 13px; margin-top: 8px; }
-.success { color: var(--success); font-size: 13px; margin-top: 8px; }
+button.secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+button.secondary:hover:not(:disabled) {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px var(--teal-dim);
+}
+
+.error { color: var(--coral); font-size: 13px; margin-top: 8px; font-family: var(--font-mono); }
+.success { color: var(--teal); font-size: 13px; margin-top: 8px; font-family: var(--font-mono); }
 .warning {
-  background: #fdf3e7;
-  border: 1px solid #e8c99a;
+  background: var(--amber-dim);
+  border: 1px solid rgba(255, 180, 84, 0.35);
   padding: 12px;
   border-radius: 6px;
   font-size: 13px;
   margin-top: 12px;
+  color: var(--ink);
 }
 
 .pill {
   display: inline-block;
-  font-size: 11px;
-  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 9px;
   border-radius: 100px;
-  background: #eee;
+  background: rgba(237, 234, 225, 0.08);
   color: var(--muted);
   margin-left: 8px;
 }
-.pill.posted { background: #e2f0e6; color: var(--success); }
-.pill.pending { background: #fdf3e7; color: #a06a1e; }
-.pill.failed { background: #f5e3e0; color: var(--danger); }
+.pill.posted { background: var(--teal-dim); color: var(--teal); }
+.pill.pending { background: var(--amber-dim); color: var(--amber); }
+.pill.failed { background: var(--coral-dim); color: var(--coral); }
+
+/* Loading text — a quiet pulse instead of static grey copy */
+p.subtitle:only-child { animation: text-pulse 1.6s ease-in-out infinite; }
+@keyframes text-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
 
 /* --- Mobile breakpoint --- */
 @media (max-width: 640px) {
   .topnav-row { padding: 14px 16px; }
-  .brand { font-size: 14px; }
+  .brand { font-size: 12px; }
   .navlinks-desktop { display: none; }
   .nav-toggle { display: flex; }
   .navlinks-mobile {
@@ -155,15 +462,15 @@ button.secondary { background: white; color: var(--ink); border: 1px solid var(-
   .navlinks-mobile a {
     margin-left: 0;
     padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 15px;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 13px;
   }
   .navlinks-mobile a:last-child { border-bottom: none; }
 
   main { padding: 24px 16px; }
   .footer { padding: 16px; }
 
-  h1 { font-size: 22px; }
+  h1 { font-size: 24px; }
   p.subtitle { margin-bottom: 24px; font-size: 14px; }
 
   .card { padding: 16px; }
@@ -171,8 +478,23 @@ button.secondary { background: white; color: var(--ink); border: 1px solid var(-
   button {
     width: 100%;
     margin-right: 0;
-    padding: 12px 18px;
   }
-  /* Buttons that sit side-by-side inline (e.g. status labels) shouldn't stretch */
+
   .pill { width: auto; }
+
+  .signal-strip { height: 22px; }
+}
+
+/* Respect reduced-motion: freeze everything decorative, keep the app usable */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  body::before { animation: none; }
+  .signal-strip path { animation: none; stroke-dasharray: none; opacity: 0.35; }
+  .constellation-line { animation: none; opacity: 0.3; stroke-dasharray: none; }
+  .constellation-hub-ring { animation: none; opacity: 0; }
 }
