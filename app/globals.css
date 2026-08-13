@@ -35,7 +35,7 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
 
 body {
   margin: 0;
@@ -44,7 +44,16 @@ body {
   color: var(--ink);
   position: relative;
   min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100%;
 }
+
+/* Defensive, global guarantees against horizontal scroll — belt and
+   suspenders on top of the layout rules below, not a substitute for them. */
+img, svg, video, canvas, iframe { max-width: 100%; height: auto; }
+input, textarea, select, button, pre, code { max-width: 100%; }
+p, span, a, li, td, th, div { overflow-wrap: break-word; }
+pre, code { overflow-wrap: anywhere; word-break: break-word; }
 
 /* Ambient background — two slow-drifting glows plus a faint scanline
    texture, fixed so it doesn't scroll with content. Very low opacity;
@@ -100,6 +109,8 @@ body::after {
   justify-content: space-between;
   align-items: center;
   padding: 16px 32px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .brand {
@@ -110,10 +121,18 @@ body::after {
   text-transform: uppercase;
   text-decoration: none;
   color: var(--ink);
-  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.brand-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .brand::before {
@@ -124,6 +143,7 @@ body::after {
   background: var(--amber);
   box-shadow: 0 0 0 3px var(--amber-dim), 0 0 10px 1px rgba(255, 180, 84, 0.6);
   animation: pulse-dot 2.4s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
 @keyframes pulse-dot {
@@ -171,6 +191,7 @@ body::after {
   padding: 8px;
   margin: 0;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .nav-toggle span {
   width: 22px;
@@ -490,8 +511,8 @@ p.subtitle:only-child { animation: text-pulse 1.6s ease-in-out infinite; }
 
 /* --- Mobile breakpoint --- */
 @media (max-width: 640px) {
-  .topnav-row { padding: 14px 16px; }
-  .brand { font-size: 12px; }
+  .topnav-row { padding: 14px 16px; gap: 8px; }
+  .brand { font-size: 11px; letter-spacing: 0.03em; gap: 6px; }
   .navlinks-desktop { display: none; }
   .nav-toggle { display: flex; }
   .navlinks-mobile {

@@ -21,7 +21,9 @@ export default function Nav() {
   return (
     <nav className="topnav">
       <div className="topnav-row">
-        <a href="/" className="brand">community-scheduler</a>
+        <a href="/" className="brand">
+          <span className="brand-text">community-scheduler</span>
+        </a>
         <button
           type="button"
           className="nav-toggle"
