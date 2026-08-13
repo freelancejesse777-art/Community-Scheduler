@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { PlatformBadge } from "../icons";
 
 export default function ConnectPage() {
   const [status, setStatus] = useState(null);
@@ -36,7 +37,10 @@ export default function ConnectPage() {
       )}
 
       <div className="card">
-        <strong>Reddit</strong>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+          <PlatformBadge platform="reddit" />
+          <strong>Reddit</strong>
+        </div>
         <p style={{ color: "var(--muted)", fontSize: 14 }}>
           Lets you post to subreddits you're subscribed to, using your own
           account and your own OAuth token. Nothing posts without you
@@ -48,7 +52,10 @@ export default function ConnectPage() {
       </div>
 
       <div className="card">
-        <strong>X (Twitter)</strong>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+          <PlatformBadge platform="twitter" />
+          <strong>X (Twitter)</strong>
+        </div>
         <p style={{ color: "var(--muted)", fontSize: 14 }}>
           X moved to pay-per-use pricing — roughly $0.015 per post charged
           to your own X developer account (more if your post has a link).
@@ -57,6 +64,22 @@ export default function ConnectPage() {
         </p>
         <a href="/api/auth/twitter">
           <button>Connect X</button>
+        </a>
+      </div>
+
+      <div className="card">
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+          <PlatformBadge platform="tiktok" />
+          <strong>TikTok</strong>
+        </div>
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>
+          TikTok posts need a photo (not just text) — you'll be asked for an
+          image URL when scheduling. Until your TikTok developer app passes
+          their review, posts land as a private draft in your TikTok inbox;
+          you'll need to open the TikTok app to actually publish them.
+        </p>
+        <a href="/api/auth/tiktok">
+          <button>Connect TikTok</button>
         </a>
       </div>
 
@@ -70,7 +93,7 @@ export default function ConnectPage() {
   );
 }
 
-function ConnectForm({ title, description, fields, endpoint, buttonLabel, onDone }) {
+function ConnectForm({ title, platform, description, fields, endpoint, buttonLabel, onDone }) {
   const [values, setValues] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -102,7 +125,10 @@ function ConnectForm({ title, description, fields, endpoint, buttonLabel, onDone
 
   return (
     <div className="card">
-      <strong>{title}</strong>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+        <PlatformBadge platform={platform} />
+        <strong>{title}</strong>
+      </div>
       <p style={{ color: "var(--muted)", fontSize: 14 }}>{description}</p>
       <form onSubmit={submit}>
         {fields.map((f) => (
@@ -129,6 +155,7 @@ function DiscordConnect({ onDone }) {
   return (
     <ConnectForm
       title="Discord"
+      platform="discord"
       description={`In the Discord channel you want to post to: Channel Settings → Integrations → Webhooks → New Webhook → Copy Webhook URL. No bot install or server admin approval needed.`}
       endpoint="/api/auth/discord"
       buttonLabel="Connect Discord channel"
@@ -145,6 +172,7 @@ function MastodonConnect({ onDone }) {
   return (
     <ConnectForm
       title="Mastodon"
+      platform="mastodon"
       description={`Works with any instance. Go to your instance → Preferences → Development → New Application, grant "write:statuses" scope, then copy the access token here.`}
       endpoint="/api/auth/mastodon"
       buttonLabel="Connect Mastodon"
@@ -161,6 +189,7 @@ function BlueskyConnect({ onDone }) {
   return (
     <ConnectForm
       title="Bluesky"
+      platform="bluesky"
       description={`Generate an app password from Settings → App Passwords (not your real account password — it's revocable separately).`}
       endpoint="/api/auth/bluesky"
       buttonLabel="Connect Bluesky"
@@ -177,6 +206,7 @@ function TelegramConnect({ onDone }) {
   return (
     <ConnectForm
       title="Telegram"
+      platform="telegram"
       description={`Message @BotFather on Telegram to create a bot (takes under a minute, no approval needed), add it as an admin to your channel or group, then paste the bot token and chat ID here.`}
       endpoint="/api/auth/telegram"
       buttonLabel="Connect Telegram"
@@ -194,6 +224,7 @@ function LemmyConnect({ onDone }) {
   return (
     <ConnectForm
       title="Lemmy"
+      platform="lemmy"
       description={`Federated, Reddit-style communities — no app registration needed, just your instance login. Works with any Lemmy instance (lemmy.world, lemmy.ml, or a self-hosted one).`}
       endpoint="/api/auth/lemmy"
       buttonLabel="Connect Lemmy"
@@ -211,6 +242,7 @@ function FacebookConnect({ onDone }) {
   return (
     <ConnectForm
       title="Facebook Page"
+      platform="facebook"
       description={`Meta requires App Review + Business Verification (weeks) before an app can post to Pages it doesn't own — until you clear that, this only works for your own Page. Generate a long-lived Page Access Token via Graph API Explorer (developers.facebook.com/tools/explorer): select your app and Page, grant pages_manage_posts + pages_read_engagement + pages_show_list, generate, then extend it to long-lived via the Access Token Debugger before pasting it here.`}
       endpoint="/api/auth/facebook"
       buttonLabel="Connect Facebook Page"

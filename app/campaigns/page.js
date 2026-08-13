@@ -9,6 +9,7 @@ function newRow() {
     destination: "",
     destinationNotes: "",
     scheduledFor: "",
+    tiktokImageUrl: "",
     adapted: "",
     riskCheck: null,
     error: null,
@@ -18,6 +19,7 @@ function newRow() {
 const PLATFORM_LABELS = {
   reddit: "Reddit",
   discord: "Discord",
+  tiktok: "TikTok",
   mastodon: "Mastodon",
   telegram: "Telegram",
   bluesky: "Bluesky",
@@ -150,7 +152,14 @@ export default function CampaignsPage() {
 
   async function scheduleCampaign() {
     setMessage(null);
-    const readyRows = rows.filter((r) => r.destination.trim() && r.connectionId && r.adapted && r.scheduledFor);
+    // TikTok rows need an image URL instead of a destination name — see
+    // the note on the Connect page.
+    const rowIsReady = (r) => {
+      const platform = connections.find((c) => String(c.id) === String(r.connectionId))?.platform;
+      const hasDestinationValue = platform === "tiktok" ? r.tiktokImageUrl.trim() : r.destination.trim();
+      return hasDestinationValue && r.connectionId && r.adapted && r.scheduledFor;
+    };
+    const readyRows = rows.filter(rowIsReady);
     if (readyRows.length === 0) {
       setMessage({ ok: false, text: "Each destination needs a connection, adapted content, and a schedule time before you can launch." });
       return;
@@ -171,12 +180,15 @@ export default function CampaignsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postId: postData.postId,
-          items: readyRows.map((r) => ({
-            connectionId: r.connectionId,
-            destination: r.destination,
-            adaptedContent: r.adapted,
-            scheduledFor: new Date(r.scheduledFor).toISOString(),
-          })),
+          items: readyRows.map((r) => {
+            const platform = connections.find((c) => String(c.id) === String(r.connectionId))?.platform;
+            return {
+              connectionId: r.connectionId,
+              destination: platform === "tiktok" ? r.tiktokImageUrl : r.destination,
+              adaptedContent: r.adapted,
+              scheduledFor: new Date(r.scheduledFor).toISOString(),
+            };
+          }),
         }),
       });
       const schedData = await schedRes.json();
@@ -266,6 +278,17 @@ export default function CampaignsPage() {
               onChange={(e) => updateRow(r.key, "destinationNotes", e.target.value)}
               placeholder="e.g. casual tone, hates hard selling"
             />
+
+            {connections.find((c) => String(c.id) === String(r.connectionId))?.platform === "tiktok" && (
+              <>
+                <label>Image URL to post (TikTok requires a photo, not just text)</label>
+                <input
+                  value={r.tiktokImageUrl}
+                  onChange={(e) => updateRow(r.key, "tiktokImageUrl", e.target.value)}
+                  placeholder="https://..."
+                />
+              </>
+            )}
 
             <label>Schedule for</label>
             <input type="datetime-local" value={r.scheduledFor} onChange={(e) => updateRow(r.key, "scheduledFor", e.target.value)} />

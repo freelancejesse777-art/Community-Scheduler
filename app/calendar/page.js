@@ -10,6 +10,7 @@ const PLATFORM_LABELS = {
   twitter: "X",
   facebook: "Facebook",
   lemmy: "Lemmy",
+  tiktok: "TikTok",
 };
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

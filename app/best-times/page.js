@@ -10,6 +10,7 @@ const PLATFORM_LABELS = {
   twitter: "X",
   facebook: "Facebook",
   lemmy: "Lemmy",
+  tiktok: "TikTok",
 };
 
 export default function BestTimesPage() {

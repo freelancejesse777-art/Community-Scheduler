@@ -9,6 +9,7 @@ export default function ComposePage() {
   const [destination, setDestination] = useState("");
   const [destinationNotes, setDestinationNotes] = useState("");
   const [connectionId, setConnectionId] = useState("");
+  const [tiktokImageUrl, setTiktokImageUrl] = useState("");
   const [adapted, setAdapted] = useState("");
   const [riskCheck, setRiskCheck] = useState(null);
   const [scheduledFor, setScheduledFor] = useState("");
@@ -57,13 +58,19 @@ export default function ComposePage() {
       const postData = await postRes.json();
       if (!postRes.ok) throw new Error(postData.error);
 
+      // TikTok's "destination" is an image URL, not a community name —
+      // see the note on the Connect page. Every other platform keeps
+      // using the community/channel name entered above.
+      const selectedPlatform = connections.find((c) => String(c.id) === String(connectionId))?.platform;
+      const destinationToSend = selectedPlatform === "tiktok" ? tiktokImageUrl : destination;
+
       const schedRes = await fetch("/api/schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postId: postData.postId,
           connectionId,
-          destination,
+          destination: destinationToSend,
           adaptedContent: adapted,
           scheduledFor: new Date(scheduledFor).toISOString(),
         }),
@@ -139,6 +146,17 @@ export default function ComposePage() {
             ))}
           </select>
 
+          {connections.find((c) => String(c.id) === String(connectionId))?.platform === "tiktok" && (
+            <>
+              <label>Image URL to post (TikTok requires a photo, not just text)</label>
+              <input
+                value={tiktokImageUrl}
+                onChange={(e) => setTiktokImageUrl(e.target.value)}
+                placeholder="https://..."
+              />
+            </>
+          )}
+
           <label>Schedule for</label>
           <input
             type="datetime-local"
@@ -158,7 +176,15 @@ export default function ComposePage() {
             );
           })()}
 
-          <button onClick={scheduleIt} disabled={loading || !connectionId || !scheduledFor}>
+          <button
+            onClick={scheduleIt}
+            disabled={
+              loading ||
+              !connectionId ||
+              !scheduledFor ||
+              (connections.find((c) => String(c.id) === String(connectionId))?.platform === "tiktok" && !tiktokImageUrl)
+            }
+          >
             {loading ? "Scheduling..." : "Schedule post"}
           </button>
         </div>

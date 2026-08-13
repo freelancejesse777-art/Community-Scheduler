@@ -102,6 +102,17 @@ export function IconLemmy(props) {
   );
 }
 
+export function IconTikTok(props) {
+  // a musical note with a small orbiting arc — short-form video/sound,
+  // not the actual TikTok mark
+  return (
+    <svg {...base} {...props}>
+      <path d="M13 5 V15.5 a3 3 0 1 1 -2.2 -2.9" />
+      <path d="M13 5 a4.5 4.5 0 0 0 4.5 4.5" strokeDasharray="1.5 2.5" />
+    </svg>
+  );
+}
+
 export const PLATFORM_ICONS = {
   reddit: IconReddit,
   twitter: IconX,
@@ -111,6 +122,7 @@ export const PLATFORM_ICONS = {
   bluesky: IconBluesky,
   facebook: IconFacebook,
   lemmy: IconLemmy,
+  tiktok: IconTikTok,
 };
 
 // A small circular badge wrapping any platform icon — the consistent

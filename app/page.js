@@ -1,7 +1,7 @@
 import { PLATFORM_ICONS } from "./icons";
 
 const CONSTELLATION_PLATFORMS = [
-  "reddit", "discord", "mastodon", "telegram", "bluesky", "twitter", "facebook", "lemmy",
+  "reddit", "discord", "mastodon", "telegram", "bluesky", "twitter", "facebook", "lemmy", "tiktok",
 ];
 
 export default function Home() {
