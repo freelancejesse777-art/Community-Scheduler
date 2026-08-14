@@ -512,7 +512,16 @@ p.subtitle:only-child { animation: text-pulse 1.6s ease-in-out infinite; }
 /* --- Mobile breakpoint --- */
 @media (max-width: 640px) {
   .topnav-row { padding: 14px 16px; gap: 8px; }
-  .brand { font-size: 11px; letter-spacing: 0.03em; gap: 6px; }
+  .brand {
+    font-size: 10px !important;
+    letter-spacing: 0 !important;
+    gap: 6px !important;
+    max-width: 210px !important;
+  }
+  .brand-text {
+    max-width: 100% !important;
+  }
+  .nav-toggle { flex-shrink: 0 !important; }
   .navlinks-desktop { display: none; }
   .nav-toggle { display: flex; }
   .navlinks-mobile {
