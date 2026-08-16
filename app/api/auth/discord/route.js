@@ -28,7 +28,14 @@ export async function POST(req) {
   }
 
   const { webhookUrl, label } = await req.json();
-  if (!webhookUrl || !webhookUrl.startsWith("https://discord.com/api/webhooks/")) {
+  // Discord still issues/accepts webhook URLs under both discord.com and
+  // the older discordapp.com domain — both are functionally identical,
+  // so accept either rather than rejecting a perfectly valid URL.
+  const isValidDiscordWebhook =
+    webhookUrl &&
+    (webhookUrl.startsWith("https://discord.com/api/webhooks/") ||
+      webhookUrl.startsWith("https://discordapp.com/api/webhooks/"));
+  if (!isValidDiscordWebhook) {
     return NextResponse.json(
       { error: "That doesn't look like a valid Discord webhook URL." },
       { status: 400 }
