@@ -11,6 +11,7 @@ const PLATFORM_LABELS = {
   facebook: "Facebook",
   lemmy: "Lemmy",
   tiktok: "TikTok",
+  discord_bot: "Discord (Bot)",
 };
 
 export default function BestTimesPage() {

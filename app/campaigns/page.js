@@ -20,6 +20,7 @@ const PLATFORM_LABELS = {
   reddit: "Reddit",
   discord: "Discord",
   tiktok: "TikTok",
+  discord_bot: "Discord (Bot)",
   mastodon: "Mastodon",
   telegram: "Telegram",
   bluesky: "Bluesky",

@@ -117,6 +117,7 @@ export const PLATFORM_ICONS = {
   reddit: IconReddit,
   twitter: IconX,
   discord: IconDiscord,
+  discord_bot: IconDiscord,
   mastodon: IconMastodon,
   telegram: IconTelegram,
   bluesky: IconBluesky,

@@ -5,16 +5,65 @@ import { PlatformBadge } from "../icons";
 export default function ConnectPage() {
   const [status, setStatus] = useState(null);
   const [teamInfo, setTeamInfo] = useState(null);
+  const [discordBotGuild, setDiscordBotGuild] = useState(null); // { id, name }
+  const [discordBotChannels, setDiscordBotChannels] = useState(null);
+  const [discordBotChannelId, setDiscordBotChannelId] = useState("");
+  const [discordBotLoading, setDiscordBotLoading] = useState(false);
+  const [discordBotError, setDiscordBotError] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("connected")) setStatus({ ok: true, msg: `Connected ${params.get("connected")}!` });
     if (params.get("error")) setStatus({ ok: false, msg: params.get("error") });
+
+    const guildId = params.get("discordBotGuildId");
+    const guildName = params.get("discordBotGuildName");
+    if (guildId) {
+      setDiscordBotGuild({ id: guildId, name: guildName || "Discord server" });
+      setDiscordBotLoading(true);
+      fetch(`/api/auth/discord-bot/channels?guildId=${encodeURIComponent(guildId)}`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.error) throw new Error(d.error);
+          setDiscordBotChannels(d.channels);
+        })
+        .catch((err) => setDiscordBotError(err.message))
+        .finally(() => setDiscordBotLoading(false));
+    }
+
     fetch("/api/team")
       .then((r) => r.json())
       .then(setTeamInfo)
       .catch(() => {});
   }, []);
+
+  async function finishDiscordBotConnect() {
+    setDiscordBotLoading(true);
+    setDiscordBotError(null);
+    try {
+      const channel = discordBotChannels.find((c) => c.id === discordBotChannelId);
+      const res = await fetch("/api/auth/discord-bot/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          guildId: discordBotGuild.id,
+          guildName: discordBotGuild.name,
+          channelId: discordBotChannelId,
+          channelName: channel?.name,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setStatus({ ok: true, msg: `Connected Discord — ${discordBotGuild.name} #${channel?.name}!` });
+      setDiscordBotGuild(null);
+      setDiscordBotChannels(null);
+      window.history.replaceState({}, "", "/connect");
+    } catch (err) {
+      setDiscordBotError(err.message);
+    } finally {
+      setDiscordBotLoading(false);
+    }
+  }
 
   const onDone = (name) => () => setStatus({ ok: true, msg: `Connected ${name}!` });
 
@@ -84,6 +133,58 @@ export default function ConnectPage() {
       </div>
 
       <DiscordConnect onDone={onDone("Discord")} />
+
+      <div className="card">
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4, flexWrap: "wrap" }}>
+          <PlatformBadge platform="discord" />
+          <strong>Discord (Bot — no webhook needed)</strong>
+        </div>
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>
+          An alternative to the webhook option above: invite this app's own
+          Discord bot to a server you administer, then pick which channel it
+          should post to. One invite covers every channel in that server —
+          no per-channel webhook URLs. Still requires that server's admin
+          (possibly you) to approve the invite; Discord doesn't allow
+          posting into a server without that.
+        </p>
+
+        {!discordBotGuild && (
+          <a href="/api/auth/discord-bot">
+            <button>Invite bot to a server</button>
+          </a>
+        )}
+
+        {discordBotGuild && (
+          <div style={{ marginTop: 8 }}>
+            <p style={{ fontSize: 13, color: "var(--teal)" }}>
+              Bot added to <strong>{discordBotGuild.name}</strong> — pick a channel:
+            </p>
+            {discordBotLoading && !discordBotChannels && <p className="subtitle">Loading channels...</p>}
+            {discordBotError && <p className="error">{discordBotError}</p>}
+            {discordBotChannels && (
+              <>
+                <label>Channel</label>
+                <select value={discordBotChannelId} onChange={(e) => setDiscordBotChannelId(e.target.value)}>
+                  <option value="">Select a channel</option>
+                  {discordBotChannels.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      #{c.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={finishDiscordBotConnect}
+                  disabled={!discordBotChannelId || discordBotLoading}
+                >
+                  {discordBotLoading ? "Connecting..." : "Finish connecting"}
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
       <MastodonConnect onDone={onDone("Mastodon")} />
       <BlueskyConnect onDone={onDone("Bluesky")} />
       <TelegramConnect onDone={onDone("Telegram")} />
