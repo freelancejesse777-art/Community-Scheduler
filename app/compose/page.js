@@ -10,6 +10,29 @@ export default function ComposePage() {
   const [destinationNotes, setDestinationNotes] = useState("");
   const [connectionId, setConnectionId] = useState("");
   const [tiktokImageUrl, setTiktokImageUrl] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setUploadError(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload-image", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      // Build an absolute URL — TikTok's servers fetch this directly, so a
+      // relative path won't work.
+      setTiktokImageUrl(`${window.location.origin}${data.url}`);
+    } catch (err) {
+      setUploadError(err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  }
   const [adapted, setAdapted] = useState("");
   const [riskCheck, setRiskCheck] = useState(null);
   const [scheduledFor, setScheduledFor] = useState("");
@@ -154,6 +177,21 @@ export default function ComposePage() {
                 onChange={(e) => setTiktokImageUrl(e.target.value)}
                 placeholder="https://..."
               />
+              <div style={{ marginTop: 6 }}>
+                <label style={{ fontSize: 13 }}>
+                  Or upload an image (JPEG/WEBP only — TikTok rejects PNG):
+                </label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/webp"
+                  onChange={handleImageUpload}
+                  disabled={uploadingImage}
+                />
+                {uploadingImage && <p style={{ fontSize: 12 }}>Uploading...</p>}
+                {uploadError && (
+                  <p style={{ fontSize: 12, color: "var(--error, red)" }}>{uploadError}</p>
+                )}
+              </div>
             </>
           )}
 
